@@ -1,0 +1,42 @@
+﻿@model _20220530.Models.Student
+
+@{
+    ViewData["Title"] = "Update";
+}
+
+<h1>修改</h1>
+
+<h4>Student</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Update">
+            <div class="mb-3">
+                <label for="input_studentNo" class="form-label">學號</label>
+                <input type="text" readonly class="form-control" id="input_studentNo" asp-for="studentNo" placeholder="請輸入學號"  value="@Model.studentNo" />
+            </div>
+            <div class="mb-3">
+                <label for="input_studentName" class="form-label">姓名</label>
+                <input type="text" class="form-control" id="input_studentName"  asp-for="studentName" placeholder="請輸入姓名"  value="@Model.studentName" />
+                <span asp-validation-for="studentName" claclass="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label for="input_gitHubLink" class="form-label">GitHub連結</label>
+                <input type="text" class="form-control" id="input_gitHubLink" asp-for="githubLink"  placeholder="請輸入GitHub連結"  value="@Model.githubLink" />
+                <span asp-validation-for="githubLink" claclass="text-danger"></span>
+            </div>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

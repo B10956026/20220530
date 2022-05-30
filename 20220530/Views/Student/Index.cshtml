@@ -1,0 +1,134 @@
+﻿@model IEnumerable<_20220530.Models.Student>
+@{
+    int total = int.Parse(ViewData["Total"].ToString()); // 全部筆數
+    int pageCount = total / 10 + (total % 10 > 0 ? 1 : 0); // 分成幾頁
+    int nowPage = int.Parse(ViewData["nowPage"].ToString()); // 目前在第幾頁
+    int seqNo = 1 + (nowPage - 1) * 10; // 流水號
+
+    string query_studentName = ViewData["query_studentName"]?.ToString();
+    string query_studentNo = ViewData["query_studentNo"]?.ToString();
+    string query_githubLink = ViewData["query_githubLink"]?.ToString();
+}
+
+@{
+    ViewData["Title"] = "學生管理";
+}
+
+<div class="text-center">
+    <h1>學生管理</h1>
+
+    <form asp-action="Index" class="card" id="formIndex">
+        <h5 class="card-header">查詢條件</h5>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-2">
+                    @Html.DisplayName("學生姓名")
+                </dt>
+                <dd class="col-sm-4">
+                    <input type="text" class="form-control input-query" name="queryDic[studentName]" value="@query_studentName" />
+                </dd>
+                <dt class="col-sm-2">
+                     @Html.DisplayName("學生學號")
+                </dt>
+                <dd class="col-sm-4">
+                    <input type="text" class="form-control input-query" name="queryDic[studentNo]" value="@query_studentNo" />
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayName("學生GitHub連結")
+                </dt>
+                <dd class="col-sm-4">
+                    <input type="text" class="form-control input-query" name="queryDic[githubLink]" value="@query_githubLink" />
+                </dd>
+            </dl>
+            <input type="hidden" name="nowPage" id="nowPage" value="1" />
+            <input type="submit" value="查詢" class="btn btn-primary" /> |
+            <input type="reset" value="清空" class="btn btn-outline-primary" id="btn_clearQuery" />
+        </div>
+    </form>
+    
+    @*新增資料*@
+    <div class="m-2 float-end">
+        <a class="btn btn-success" asp-action="Create">新增</a>
+    </div>
+    
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>序號</th>
+                <th>學生名稱</th>
+                <th>學生學號</th>
+                <th>Github連結</th>
+                @*<th>是否刪除</th>*@
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@seqNo</td>
+                    <td>@item.studentName</td>
+                    <td>@item.studentNo</td>
+                    <td>@item.githubLink</td>
+                    @*<td>@item.isDelete</td>*@
+                    <td>
+                        @Html.ActionLink("修改", "Update", new { studentNo = item.studentNo })  |
+                        @Html.ActionLink("明細", "Detail", new { studentNo = item.studentNo })  |
+                        @Html.ActionLink("刪除", "Delete", new { studentNo = item.studentNo })
+                    </td>
+                </tr>
+                seqNo++;
+            }
+        </tbody>
+    </table>
+
+    @*分頁區 pagenation*@
+    @if (pageCount > 0)
+    {
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                @if (nowPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-nowPage="@(nowPage - 1)" data-topage="@(nowPage - 1)">Previous</a>
+                    </li>
+                }
+                @for (int i = 1; i <= pageCount; i++)
+                {
+                    var active = (i == nowPage) ? "active" : "";
+                    <li class="page-item @active">
+                        <a class="page-link" asp-action="Index" asp-route-nowPage="@i" data-topage="@i">@i</a>
+                    </li>
+                }
+                @if (nowPage < pageCount)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-nowPage="@(nowPage + 1)" data-topage="@(nowPage + 1)">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>
+
+<script>
+    // 分頁導覽列
+    var element = document.getElementByClassName('page-link');
+    for (var i = 0; i < element.length; i++) {
+        element[i].onclick = function() {
+            let toPage = this.dataset.topage;
+            document.getElementById('nowPage').value = toPage;
+            document.getElementById('formIndex').submit();
+            return false;
+        });
+    }
+
+    // 清空按紐
+    document.getElementById('btn_clearQuery').onclick = () => {
+        var element = document.getElementsByClassName('input-query');
+        for (var i = 0; i < element.length; i++) {
+            element[i].value = '';
+        }
+        document.getElementById('formIndex').submit();
+    }
+</script>
